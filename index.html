@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#080808">
+<title>Бир Жолу — Только один раз</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Geologica:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080808;
+  --text: #f2ede6;
+  --text2: #8a8480;
+  --text3: #4a4540;
+  --gold: #c9a96e;
+  --gold2: #e8c88a;
+}
+* { margin:0; padding:0; box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'Geologica', sans-serif;
+  overflow-x: hidden;
+  cursor: default;
+}
+
+/* ── NOISE TEXTURE ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 1000;
+  opacity: .5;
+}
+
+/* ── HERO ── */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 28px;
+  position: relative;
+  text-align: center;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 50%; transform: translateX(-50%);
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(201,169,110,.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(201,169,110,.08);
+  border: 1px solid rgba(201,169,110,.2);
+  border-radius: 50px;
+  padding: 6px 16px;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 36px;
+  animation: fadeDown .8s ease both;
+}
+
+.hero-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(52px, 14vw, 96px);
+  font-weight: 300;
+  line-height: .95;
+  letter-spacing: -.02em;
+  margin-bottom: 10px;
+  animation: fadeDown .8s .1s ease both;
+}
+.hero-title em {
+  font-style: italic;
+  color: var(--gold);
+}
+.hero-sub {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(16px, 4vw, 22px);
+  font-weight: 300;
+  color: var(--text2);
+  letter-spacing: .04em;
+  margin-bottom: 48px;
+  animation: fadeDown .8s .2s ease both;
+}
+.hero-line {
+  width: 1px;
+  height: 60px;
+  background: linear-gradient(to bottom, var(--gold), transparent);
+  margin: 0 auto 48px;
+  animation: fadeDown .8s .3s ease both;
+}
+
+/* ── LETTER ── */
+.letter {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 0 4px;
+}
+.letter-from {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 32px;
+  opacity: 0;
+  animation: fadeUp .8s .4s ease forwards;
+}
+.letter-block {
+  opacity: 0;
+  transform: translateY(20px);
+}
+.letter-block.visible {
+  animation: fadeUp .9s ease forwards;
+}
+
+.letter p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(20px, 4.5vw, 28px);
+  font-weight: 400;
+  line-height: 1.65;
+  color: var(--text);
+  margin-bottom: 28px;
+}
+.letter p.small {
+  font-size: clamp(16px, 3.5vw, 20px);
+  color: var(--text2);
+  font-weight: 300;
+}
+.letter p em {
+  font-style: italic;
+  color: var(--gold2);
+}
+.letter p strong {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.divider {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 40px 0;
+  opacity: .3;
+}
+.divider::before, .divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--text3);
+}
+.divider span { font-size: 14px; color: var(--text3); }
+
+/* ── STAT BLOCK ── */
+.stat-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 40px 0;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.stat-row.visible { animation: fadeUp .9s ease forwards; }
+.stat-card {
+  background: rgba(255,255,255,.03);
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 16px;
+  padding: 20px 16px;
+  text-align: center;
+}
+.stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px;
+  font-weight: 300;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text2);
+  line-height: 1.4;
+}
+
+/* ── QUOTE ── */
+.big-quote {
+  border-left: 2px solid var(--gold);
+  padding: 16px 0 16px 24px;
+  margin: 40px 0;
+  text-align: left;
+  opacity: 0;
+  transform: translateY(20px);
+}
+.big-quote.visible { animation: fadeUp .9s ease forwards; }
+.big-quote p {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(22px, 5vw, 32px);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--text);
+  line-height: 1.5;
+  margin: 0;
+}
+.big-quote cite {
+  display: block;
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 12px;
+  font-style: normal;
+  letter-spacing: .08em;
+}
+
+/* ── CTA ── */
+.cta-section {
+  padding: 80px 28px;
+  text-align: center;
+  position: relative;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 50%; transform: translateX(-50%);
+  width: 500px; height: 400px;
+  background: radial-gradient(circle, rgba(201,169,110,.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-label {
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  margin-bottom: 20px;
+  opacity: 0;
+}
+.cta-label.visible { animation: fadeUp .8s ease forwards; }
+.cta-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(36px, 9vw, 64px);
+  font-weight: 300;
+  line-height: 1.1;
+  margin-bottom: 40px;
+  opacity: 0;
+}
+.cta-title.visible { animation: fadeUp .8s .1s ease forwards; }
+.cta-title em { font-style: italic; color: var(--gold); }
+
+.btn-start {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  background: var(--gold);
+  color: #080808;
+  padding: 16px 36px;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  transition: all .3s;
+  opacity: 0;
+}
+.btn-start.visible { animation: fadeUp .8s .2s ease forwards; }
+.btn-start:hover { background: var(--gold2); transform: translateY(-2px); box-shadow: 0 12px 40px rgba(201,169,110,.25); }
+.btn-start:active { transform: translateY(0); }
+
+.btn-secondary {
+  display: block;
+  margin-top: 16px;
+  font-size: 13px;
+  color: var(--text3);
+  text-decoration: none;
+  letter-spacing: .04em;
+  transition: color .2s;
+  opacity: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  width: 100%;
+}
+.btn-secondary.visible { animation: fadeUp .8s .3s ease forwards; }
+.btn-secondary:hover { color: var(--text2); }
+
+/* ── FOOTER ── */
+.footer {
+  border-top: 1px solid rgba(255,255,255,.05);
+  padding: 32px 28px;
+  text-align: center;
+  font-size: 12px;
+  color: var(--text3);
+}
+
+/* ── PROGRESS SCREEN ── */
+.progress-screen {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: var(--bg);
+  z-index: 500;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 28px;
+  text-align: center;
+}
+.progress-screen.active { display: flex; }
+.ps-emoji { font-size: 48px; margin-bottom: 24px; }
+.ps-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 36px;
+  font-weight: 300;
+  margin-bottom: 12px;
+}
+.ps-title em { font-style: italic; color: var(--gold); }
+.ps-sub { font-size: 14px; color: var(--text2); margin-bottom: 40px; line-height: 1.6; }
+.ps-days {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 32px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.ps-day {
+  width: 44px; height: 44px;
+  border-radius: 12px;
+  border: 1px solid var(--text3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text3);
+  cursor: pointer;
+  transition: all .2s;
+}
+.ps-day.done {
+  background: rgba(201,169,110,.15);
+  border-color: var(--gold);
+  color: var(--gold);
+}
+.ps-day.today {
+  background: var(--gold);
+  border-color: var(--gold);
+  color: #080808;
+  font-weight: 700;
+}
+.ps-streak {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 64px;
+  font-weight: 300;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.ps-streak-label { font-size: 12px; color: var(--text2); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 32px; }
+.ps-motivation {
+  background: rgba(201,169,110,.06);
+  border: 1px solid rgba(201,169,110,.15);
+  border-radius: 16px;
+  padding: 18px 20px;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 18px;
+  font-style: italic;
+  color: var(--text2);
+  line-height: 1.5;
+  margin-bottom: 28px;
+  max-width: 360px;
+}
+.ps-btn {
+  width: 100%;
+  max-width: 360px;
+  padding: 15px;
+  background: var(--gold);
+  color: #080808;
+  border: none;
+  border-radius: 50px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all .2s;
+  margin-bottom: 10px;
+}
+.ps-btn:active { opacity: .85; }
+.ps-btn.outline {
+  background: transparent;
+  border: 1px solid var(--text3);
+  color: var(--text2);
+}
+
+/* ── ANIMATIONS ── */
+@keyframes fadeDown {
+  from { opacity:0; transform:translateY(-16px) }
+  to { opacity:1; transform:translateY(0) }
+}
+@keyframes fadeUp {
+  from { opacity:0; transform:translateY(20px) }
+  to { opacity:1; transform:translateY(0) }
+}
+</style>
+</head>
+<body>
+
+<!-- MANIFESTO PAGE -->
+<div id="manifestoPage">
+
+  <section class="hero">
+    <div class="badge">✦ Бир Жолу — Только один раз</div>
+    <h1 class="hero-title">Жизнь дана<br><em>один раз</em></h1>
+    <p class="hero-sub">Письмо тому, кто устал терять время</p>
+    <div class="hero-line"></div>
+
+    <div class="letter">
+      <div class="letter-from">Письмо тебе, друг мой</div>
+
+      <div class="letter-block">
+        <p>Знаешь что в нас один из самых ценных вещей который дал нам Всевышний? Это наше <em>время</em> и наша <em>жизнь</em>.</p>
+        <p class="small">И она дана только один раз. Нету тут «перезайти» как в игре. Просто представь — всего <em>60–70 зим</em> мы увидем в этой жизни, и это в лучшем случае.</p>
+      </div>
+
+      <div class="divider"><span>✦</span></div>
+
+      <div class="stat-row">
+        <div class="stat-card">
+          <div class="stat-num">3.5ч</div>
+          <div class="stat-label">среднее время в соцсетях каждый день</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">53д</div>
+          <div class="stat-label">в год украдено из твоей жизни</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">8сек</div>
+          <div class="stat-label">средняя длина видео — столько стоит твоё внимание</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-num">1000+</div>
+          <div class="stat-label">инженеров и психологов делают тебя зависимым</div>
+        </div>
+      </div>
+
+      <div class="letter-block">
+        <p>Что такое наша жизнь? Это наш образ жизни. Это наша семья. Это наша работа. Это наши друзья.</p>
+        <p class="small">И давай спросим себя честно — <em>куда мы тратим эту жизнь?</em> Что мы хотим от неё? Что мы хотим дать в неё?</p>
+      </div>
+
+      <div class="big-quote">
+        <p>«Успешного человека от неуспешного отличает только одно — как они пользуются своим временем.»</p>
+        <cite>— из 5 лет слушания успешных людей</cite>
+      </div>
+
+      <div class="letter-block">
+        <p>Сейчас наш враг — это <em>не другие люди</em> и не другие страны. Мы сами убиваем свою жизнь.</p>
+        <p class="small">За милыми соцсетями стоят тысячи инженеров, наркологов и психологов. Мощный алгоритм знает о тебе больше чем ты сам — когда просыпаешься, когда грустно, когда весело.</p>
+      </div>
+
+      <div class="divider"><span>✦</span></div>
+
+      <div class="letter-block">
+        <p class="small">Когда мы каждый день смотрим видео по <em>8 секунд</em> — мозг перепрограммируется. После этого смотреть обучающее видео на 40 минут становится почти невозможным. Скучным. Невыносимым.</p>
+        <p>Это не твоя слабость. Это <strong>спроектировано специально.</strong></p>
+      </div>
+
+      <div class="big-quote">
+        <p>«Мы не виноваты что попали в это. Но мы будем виноваты если — <em>зная об этом</em> — останемся там.»</p>
+      </div>
+
+      <div class="letter-block">
+        <p>Наш мозг — <em>сильнее любого суперкомпьютера.</em> Он может выйти из любой ситуации и сделать нас счастливыми и успешными.</p>
+        <p class="small">Нам нужно только убедить его в этом. И начать — сегодня.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="cta-section">
+    <div class="cta-label">Пора начать</div>
+    <h2 class="cta-title">Готов вернуть<br>свою <em>жизнь?</em></h2>
+    <button class="btn-start" onclick="startJourney()">
+      ✦ Начать сегодня
+    </button>
+    <button class="btn-secondary" onclick="startJourney()">Просто попробую — это бесплатно</button>
+  </section>
+
+  <footer class="footer">
+    Сделано с заботой о молодёжи Кыргызстана · Умар Элдияров
+  </footer>
+
+</div>
+
+<!-- PROGRESS / APP PAGE -->
+<div class="progress-screen" id="appPage">
+  <div class="ps-emoji" id="ps-emoji">💪</div>
+  <div class="ps-title" id="ps-title">День <em id="ps-day-num">1</em></div>
+  <div class="ps-sub" id="ps-sub">Ты начал. Это уже победа.<br>Отмечай каждый день без соцсетей.</div>
+
+  <div class="ps-streak" id="ps-streak">0</div>
+  <div class="ps-streak-label">дней подряд 🔥</div>
+
+  <div class="ps-days" id="ps-days"></div>
+
+  <div class="ps-motivation" id="ps-motivation">
+    «Каждый день без соцсетей — это день посвящённый себе.»
+  </div>
+
+  <button class="ps-btn" id="ps-check-btn" onclick="checkToday()">✓ Сегодня без соцсетей</button>
+  <button class="ps-btn outline" onclick="showManifesto()">← Вернуться к письму</button>
+</div>
+
+<script>
+// ── SCROLL ANIMATIONS ──
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.letter-block, .stat-row, .big-quote, .cta-label, .cta-title, .btn-start, .btn-secondary').forEach(el => observer.observe(el));
+
+// ── DATA ──
+const MOTIVATIONS = [
+  '«Каждый день без соцсетей — это день посвящённый себе.»',
+  '«Фокус — это суперсила. Охраняй его.»',
+  '«60-70 зим. Только один раз. Выбирай мудро.»',
+  '«Твой мозг мощнее любого алгоритма.»',
+  '«Успех — это накопленные часы настоящей работы.»',
+  '«Тишина — это где рождаются великие идеи.»',
+  '«Каждый час без ленты — час ближе к мечте.»',
+];
+
+function getData() {
+  return JSON.parse(localStorage.getItem('birjolu_data') || '{"startDate":null,"checkedDays":[]}');
+}
+function saveData(d) { localStorage.setItem('birjolu_data', JSON.stringify(d)); }
+
+function startJourney() {
+  let data = getData();
+  if(!data.startDate) {
+    data.startDate = new Date().toDateString();
+    saveData(data);
+  }
+  renderApp();
+  document.getElementById('manifestoPage').style.display = 'none';
+  document.getElementById('appPage').classList.add('active');
+}
+
+function showManifesto() {
+  document.getElementById('appPage').classList.remove('active');
+  document.getElementById('manifestoPage').style.display = 'block';
+  window.scrollTo(0,0);
+}
+
+function renderApp() {
+  const data = getData();
+  const today = new Date().toDateString();
+  const start = data.startDate ? new Date(data.startDate) : new Date();
+  const dayNum = Math.floor((new Date(today) - new Date(start.toDateString())) / 86400000) + 1;
+  const checkedToday = data.checkedDays.includes(today);
+
+  // Streak
+  let streak = 0;
+  for(let i=0; i<30; i++) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    if(data.checkedDays.includes(d.toDateString())) streak++;
+    else break;
+  }
+
+  document.getElementById('ps-day-num').innerText = dayNum;
+  document.getElementById('ps-streak').innerText = streak;
+  document.getElementById('ps-motivation').innerText = MOTIVATIONS[streak % MOTIVATIONS.length];
+
+  // Emoji & title by streak
+  let emoji = '🌱', title = 'День <em id="ps-day-num">'+dayNum+'</em>';
+  if(streak >= 3) emoji = '💪';
+  if(streak >= 7) emoji = '🔥';
+  if(streak >= 14) emoji = '⚡';
+  if(streak >= 21) emoji = '🏆';
+  if(streak >= 30) emoji = '👑';
+  document.getElementById('ps-emoji').innerText = emoji;
+
+  // Sub text
+  const subs = [
+    'Ты начал. Это уже победа.',
+    'Три дня — первый барьер пройден!',
+    'Неделя! Твой мозг начинает восстанавливаться.',
+    'Две недели. Фокус возвращается.',
+    'Месяц! Ты изменил себя.',
+  ];
+  const subIdx = streak >= 30 ? 4 : streak >= 14 ? 3 : streak >= 7 ? 2 : streak >= 3 ? 1 : 0;
+  document.getElementById('ps-sub').innerHTML = subs[subIdx] + '<br>Отмечай каждый день без соцсетей.';
+
+  // Days grid (last 21 days)
+  const daysWrap = document.getElementById('ps-days');
+  daysWrap.innerHTML = '';
+  for(let i=20; i>=0; i--) {
+    const d = new Date(); d.setDate(d.getDate()-i);
+    const ds = d.toDateString();
+    const isToday = ds === today;
+    const isDone = data.checkedDays.includes(ds);
+    const div = document.createElement('div');
+    div.className = 'ps-day' + (isToday?' today':'') + (isDone&&!isToday?' done':'');
+    div.innerText = isDone ? '✓' : d.getDate();
+    daysWrap.appendChild(div);
+  }
+
+  // Check button
+  const btn = document.getElementById('ps-check-btn');
+  if(checkedToday) {
+    btn.innerText = '✓ Сегодня отмечено!';
+    btn.style.background = 'rgba(201,169,110,.15)';
+    btn.style.color = 'var(--gold)';
+    btn.style.border = '1px solid rgba(201,169,110,.3)';
+    btn.disabled = true;
+  } else {
+    btn.innerText = '✓ Сегодня без соцсетей';
+    btn.style.background = 'var(--gold)';
+    btn.style.color = '#080808';
+    btn.style.border = 'none';
+    btn.disabled = false;
+  }
+}
+
+function checkToday() {
+  const data = getData();
+  const today = new Date().toDateString();
+  if(!data.checkedDays.includes(today)) {
+    data.checkedDays.push(today);
+    saveData(data);
+  }
+  renderApp();
+  // Small celebration
+  const btn = document.getElementById('ps-check-btn');
+  btn.innerText = '🎉 Отлично! Продолжай!';
+  setTimeout(() => renderApp(), 1500);
+}
+
+// Check if already started
+window.addEventListener('load', () => {
+  const data = getData();
+  if(data.startDate) {
+    renderApp();
+    document.getElementById('manifestoPage').style.display = 'block';
+  }
+});
+</script>
+</body>
+</html>
